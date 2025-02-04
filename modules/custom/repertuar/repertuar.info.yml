@@ -1,0 +1,6 @@
+name: Repertuar CG2
+type: module
+description: "Moduł tagów repertuaru"
+package: custom
+core_version_requirement: ^8 || ^9  || ^10
+# configure: test.form

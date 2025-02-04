@@ -1,0 +1,10 @@
+entity.repertuar_tags.settings:
+  title: "Tagi repertuaru"
+  description: "Configure a Tagi repertuaru entity type."
+  route_name: entity.repertuar_tags.settings
+  parent: system.admin_structure
+entity.repertuar_tags.collection:
+  title: "Tagi repertuaru"
+  description: "List of tagi repertuaru."
+  route_name: entity.repertuar_tags.collection
+  parent: system.admin_content

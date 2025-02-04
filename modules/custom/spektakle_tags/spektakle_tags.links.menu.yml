@@ -1,0 +1,10 @@
+entity.spektakle_tags.settings:
+  title: "Sceny spektakli"
+  description: "Configure a Sceny spektakli entity type."
+  route_name: entity.spektakle_tags.settings
+  parent: system.admin_structure
+entity.spektakle_tags.collection:
+  title: "Sceny spektakli"
+  description: "List of sceny spektakli."
+  route_name: entity.spektakle_tags.collection
+  parent: system.admin_content

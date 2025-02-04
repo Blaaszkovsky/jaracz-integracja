@@ -1,0 +1,11 @@
+administer sceny spektakli:
+  title: "Administer sceny spektakli settings"
+  restrict access: true
+
+spektakle_tags.edit:
+  title: "Edit spektakle_tags"
+  description: "Edit content created by spektakle_tags."
+
+spektakle_tags.view:
+  title: "View spektakle_tags"
+  description: "Edit content created by spektakle_tags."

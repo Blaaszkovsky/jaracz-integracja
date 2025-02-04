@@ -1,0 +1,129 @@
+<?php
+
+/**
+ * @file
+ * Provides a repertuar_tags entity type.
+ */
+
+use Drupal\Core\Render\Element;
+use Drupal\repertuar_tags\Entity\repertuar_tags;
+use Drupal\user\UserInterface;
+
+use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Session\AccountInterface;
+
+use Drupal\Core\Routing\RouteMatchInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+
+function repertuar_tags_entity_access(EntityInterface $entity, $operation, AccountInterface $account) {
+
+
+  if ($operation == 'view' && $account->hasPermission('repertuar_tags.view')) {
+
+    return AccessResult::allowed();
+  } elseif (in_array($operation, ['delete', 'edit', 'update']) && $account->hasPermission('repertuar_tags.edit')) {
+    return AccessResult::allowed();
+  }
+  // return AccessResult::forbidden();
+
+  return AccessResult::allowed();
+}
+
+function repertuar_tags_entity_insert(Drupal\Core\Entity\EntityInterface $entity) {
+  // Sprawdź, czy tworzona jednostka jest jednostką, którą chcesz śledzić.
+  if ($entity->getEntityTypeId() == 'repertuar_tags') {
+    // Skonfiguruj ścieżkę docelową przekierowania.
+    $path = '/admin/content/repertuar-tags';
+    // Przygotuj odpowiedź przekierowania.
+    $response = new RedirectResponse($path);
+    // Wykonaj przekierowanie.
+    $response->send();
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function repertuar_tags_theme() {
+
+  return [
+    'repertuar_tags' => [
+      'render element' => 'elements',
+    ],
+  ];
+}
+
+/**
+ * Prepares variables for repertuar_tags templates.
+ *
+ * Default template: repertuar_tags.html.twig.
+ *
+ * @param array $variables
+ *   An associative array containing:
+ *   - elements: An associative array containing the repertuar_tags information and any
+ *     fields attached to the entity.
+ *   - attributes: HTML attributes for the containing element.
+ */
+function template_preprocess_repertuar_tags(array &$variables) {
+
+  $variables['view_mode'] = $variables['elements']['#view_mode'];
+
+
+  foreach (Element::children($variables['elements']) as $key) {
+    $variables['content'][$key] = $variables['elements'][$key];
+  }
+}
+
+/**
+ * Implements hook_user_cancel().
+ */
+// function repertuar_tags_user_cancel($edit, UserInterface $account, $method) {
+//   switch ($method) {
+//     case 'user_cancel_block_unpublish':
+//       // Unpublish repertuar_tagss.
+//       $storage = \Drupal::entityTypeManager()->getStorage('repertuar_tags');
+//       $repertuar_tags_ids = $storage->getQuery()
+//         ->condition('uid', $account->id())
+//         ->condition('status', 1)
+//         ->execute();
+//       foreach ($storage->loadMultiple($repertuar_tags_ids) as $repertuar_tags) {
+//         $repertuar_tags->set('status', FALSE);
+//         $repertuar_tags->save();
+//       }
+//       break;
+
+//     case 'user_cancel_reassign':
+//       // Anonymize repertuar_tagss.
+//       $storage = \Drupal::entityTypeManager()->getStorage('repertuar_tags');
+//       $repertuar_tags_ids = $storage->getQuery()
+//         ->condition('uid', $account->id())
+//         ->execute();
+//       foreach ($storage->loadMultiple($repertuar_tags_ids) as $repertuar_tags) {
+//         $repertuar_tags->setOwnerId(0);
+//         $repertuar_tags->save();
+//       }
+//       break;
+//   }
+// }
+
+/**
+ * Implements hook_ENTITY_TYPE_predelete() for user entities.
+ */
+// function repertuar_tags_user_predelete(UserInterface $account) {
+//   // Delete repertuar_tagss.
+//   $storage = \Drupal::entityTypeManager()->getStorage('repertuar_tags');
+//   $repertuar_tags_ids = $storage->getQuery()
+//     ->condition('uid', $account->id())
+//     ->execute();
+//   $repertuar_tagss = $storage->loadMultiple($repertuar_tags_ids);
+//   $storage->delete($repertuar_tagss);
+//   // Delete old revisions.
+//   $repertuar_tags_ids = $storage->getQuery()
+//     ->allRevisions()
+//     ->condition('uid', $account->id())
+//     ->execute();
+//   foreach (array_keys($repertuar_tags_ids) as $revision_id) {
+//     $storage->deleteRevision($revision_id);
+//   }
+// }

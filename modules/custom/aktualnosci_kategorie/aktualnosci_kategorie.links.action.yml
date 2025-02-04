@@ -1,0 +1,5 @@
+aktualnosci_kategorie.add_form:
+  title: "Dodaj kategorie aktualności"
+  route_name: entity.aktualnosci_kategorie.add_form
+  appears_on:
+    - entity.aktualnosci_kategorie.collection

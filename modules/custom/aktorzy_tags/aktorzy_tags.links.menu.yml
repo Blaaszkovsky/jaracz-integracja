@@ -1,0 +1,10 @@
+entity.aktorzy_tags.settings:
+  title: "Kategorie aktorów"
+  description: "Configure a Kategorie aktorów entity type."
+  route_name: entity.aktorzy_tags.settings
+  parent: system.admin_structure
+entity.aktorzy_tags.collection:
+  title: "Kategorie aktorów"
+  description: "List of kategorie aktorów."
+  route_name: entity.aktorzy_tags.collection
+  parent: system.admin_content

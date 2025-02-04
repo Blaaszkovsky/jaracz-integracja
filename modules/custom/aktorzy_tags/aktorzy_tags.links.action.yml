@@ -1,0 +1,5 @@
+aktorzy_tags.add_form:
+  title: "Dodaj grupę aktorów"
+  route_name: entity.aktorzy_tags.add_form
+  appears_on:
+    - entity.aktorzy_tags.collection

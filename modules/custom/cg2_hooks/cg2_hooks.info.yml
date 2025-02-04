@@ -1,0 +1,6 @@
+name: Modyfikacje Hooków CG2
+type: module
+description: "Właczenie różnych hooków"
+package: Development
+core_version_requirement: ^8 || ^9  || ^10
+# configure: test.form

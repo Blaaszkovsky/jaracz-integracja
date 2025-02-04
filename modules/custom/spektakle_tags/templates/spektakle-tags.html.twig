@@ -1,0 +1,21 @@
+{#
+/**
+ * @file
+ * Default theme implementation to present a realizacje entity.
+ *
+ * This template is used when viewing a canonical realizacje page,
+ *
+ * Available variables:
+ * - content: A list of content items. Use 'content' to print all content, or
+ *   print a subset such as 'content.label'.
+ * - attributes: HTML attributes for the container element.
+ *
+ * @see template_preprocess_realizacje()
+ */
+#}
+
+
+<a class="aside-links__item btn btn--black btn--bordered" href="#scena_{{_context.elements[" #spektakle_tags"].getId}}">
+	{{content.label}}
+	<span class="icon icon--arrow-right-up"></span>
+</a>

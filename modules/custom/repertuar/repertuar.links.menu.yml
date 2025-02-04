@@ -1,0 +1,10 @@
+entity.repertuar.settings:
+  title: "Repertuar"
+  description: "Configure a Repertuar entity type."
+  route_name: entity.repertuar.settings
+  parent: system.admin_structure
+entity.repertuar.collection:
+  title: "Repertuar"
+  description: "List of Repertuar."
+  route_name: entity.repertuar.collection
+  parent: system.admin_content

@@ -1,0 +1,35 @@
+entity.spektakle_tags.settings:
+  path: "admin/structure/spektakle-tags"
+  defaults:
+    _form: '\Drupal\spektakle_tags\Form\SpektakleTagsSettingsForm'
+    _title: "Sceny spektakli"
+  requirements:
+    _permission: "administer sceny spektakli"
+
+entity.spektakle_tags.collection:
+  path: "/admin/content/spektakle-tags"
+  defaults:
+    # Calls the list controller, defined in the annotation of the contact entity.
+    _entity_list: "spektakle_tags"
+    _title: "Sceny spektakli"
+  requirements:
+    # Checks for permission directly.
+    _permission: "spektakle_tags.view"
+
+entity.spektakle_tags.add_form:
+  path: "/admin/content/spektakle-tags/add"
+  defaults:
+    # Calls the form.add controller, defined in the contact entity.
+    _entity_form: spektakle_tags.add
+    _title: "Dodaj scenę"
+  requirements:
+    _permission: "spektakle_tags.edit"
+
+entity.spektakle_tags.edit_form:
+  path: "/admin/content/spektakle-tags/{spektakle_tags}"
+  defaults:
+    # Calls the form.edit controller, defined in the contact entity.
+    _entity_form: spektakle_tags.edit
+    _title: "Edytuj scene"
+  requirements:
+    _permission: "spektakle_tags.edit"

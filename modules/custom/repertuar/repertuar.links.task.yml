@@ -1,0 +1,9 @@
+entity.repertuar.settings:
+  title: "Settings"
+  route_name: entity.repertuar.settings
+  base_route: entity.repertuar.settings
+entity.repertuar.collection:
+  title: "Repertuar"
+  route_name: entity.repertuar.collection
+  base_route: system.admin_content
+  weight: 10

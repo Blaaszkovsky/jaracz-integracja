@@ -1,0 +1,35 @@
+entity.repertuar_tags.settings:
+  path: "admin/structure/repertuar-tags"
+  defaults:
+    _form: '\Drupal\repertuar_tags\Form\RepertuarTagsSettingsForm'
+    _title: "Tagi repertuaru"
+  requirements:
+    _permission: "administer tagi repertuaru"
+
+entity.repertuar_tags.collection:
+  path: "/admin/content/repertuar-tags"
+  defaults:
+    # Calls the list controller, defined in the annotation of the contact entity.
+    _entity_list: "repertuar_tags"
+    _title: "Tagi repertuaru"
+  requirements:
+    # Checks for permission directly.
+    _permission: "repertuar_tags.view"
+
+entity.repertuar_tags.add_form:
+  path: "/admin/content/repertuar-tags/add"
+  defaults:
+    # Calls the form.add controller, defined in the contact entity.
+    _entity_form: repertuar_tags.add
+    _title: "Dodaj tag repertuaru"
+  requirements:
+    _permission: "repertuar_tags.edit"
+
+entity.repertuar_tags.edit_form:
+  path: "/admin/content/repertuar-tags/{repertuar_tags}"
+  defaults:
+    # Calls the form.edit controller, defined in the contact entity.
+    _entity_form: repertuar_tags.edit
+    _title: "Edytuj tag repertuaru"
+  requirements:
+    _permission: "repertuar_tags.edit"

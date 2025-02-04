@@ -1,0 +1,9 @@
+entity.repertuar_tags.settings:
+  title: "Settings"
+  route_name: entity.repertuar_tags.settings
+  base_route: entity.repertuar_tags.settings
+entity.repertuar_tags.collection:
+  title: "Tagi repertuaru"
+  route_name: entity.repertuar_tags.collection
+  base_route: system.admin_content
+  weight: 10

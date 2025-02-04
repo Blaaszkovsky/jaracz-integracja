@@ -1,0 +1,266 @@
+<?php
+
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\image\Entity\ImageStyle;
+
+
+
+/**
+ * Implements hook_install().
+ */
+function cg2_hooks_install($is_syncing) {
+  create_image_style();
+}
+
+function cg2_hooks_uninstall($is_syncing) {
+  remove_all_image_styles();
+}
+
+/**
+ * Implements hook_help().
+ */
+function cg2_hooks_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    case 'help.page.cg2':
+      return t('
+        <h2>Lorem ipsum generator for Drupal.</h2>
+        <h3>Instructions</h3>
+        <p>Lorem ipsum dolor sit amet... <strong>Just kidding!</strong></p>
+        <p>Unpack in the <em>modules</em> folder (currently in the root of your Drupal 8 installation) and enable in <strong>/admin/modules</strong>.</p>
+        <p>Then, visit <strong>/admin/config/development/cg2</strong> and enter your own set of phrases to build random-generated text (or go with the default Lorem ipsum).</p>
+        <p>Last, visit <strong>www.example.com/cg2/generate/P/S</strong> where:</p>
+        <ul>
+          <li><em>P</em> is the number of <em>paragraphs</em></li>
+          <li><em>S</em> is the maximum number of <em>sentences</em></li>
+        </ul>
+        <p>There is also a generator block in which you can choose how many paragraphs and
+phrases and it\'ll do the rest.</p>
+        <p>If you need, there\'s also a specific <em>generate lorem ipsum</em> permission.</p>
+        <h3>Attention</h3>
+        <p>Most bugs have been ironed out, holes covered, features added. But this module is a work in progress. Please report bugs and suggestions, ok?</p>
+      ');
+  }
+  // remove_all_image_styles();
+}
+
+/**
+ * zmienia linki w sitemapie na bez parametrów
+ *
+ * @return void
+ */
+function cg2_hooks_simple_sitemap_links_alter(&$links, $variant) {
+
+  foreach ($links as $key => $link) {
+    $url = $links[$key]['url'];
+    $links[$key]['url'] = removeParametersFromUrl($url);
+
+    foreach ($links[$key]['alternate_urls'] as $key2 => $alternative_url) {
+      $links[$key]['alternate_urls'][$key2] = removeParametersFromUrl($alternative_url);
+    }
+  }
+}
+
+/**
+ * Usuwa z linku alter na stronie parametry get
+ *
+ * @param array $build
+ * @param EntityInterface $entity
+ * @param EntityViewDisplayInterface $display
+ * @return void
+ */
+function cg2_hooks_page_attachments_alter(array &$build, $entity,  $display) {
+  // create_image_style();
+
+  foreach ($build['#attached']['html_head_link'] as $key => &$tag) {
+    if ($tag[0]['rel'] == 'alternate') {
+      $tag[0]['href'] = removeParametersFromUrl($tag[0]['href']);
+    }
+
+    // usuwa domyślny icon
+    if ($tag[0]['rel'] == 'icon') {
+      unset($build['#attached']['html_head_link'][$key]);
+    }
+  }
+}
+
+//--------------------------------
+// USUWANIE PARAMETROW Z ADRESOW URL
+//--------------------------------
+
+function removeParametersFromUrl($url) {
+  $url = parse_url($url);
+  $url = $url['scheme'] . '://' . $url['host'] . $url['path'];
+  return $url;
+}
+
+//-------------------------------
+// TWORZENIE STYLÓW OBRAZKÓW
+//-------------------------------
+
+/**
+ * Tworzy style obrazów
+ *
+ * @return void
+ */
+function create_image_style() {
+
+  remove_all_image_styles();
+
+  [$width, $height, $anchor] = return_image_parameters();
+
+  foreach ($width as $w_k => $w_v) {
+    foreach ($height as $h_k => $h_v) {
+      foreach ($anchor as $a_k => $a_v) {
+
+        [$name, $nameUrl] = get_image_style_name($w_v . 'x' . $h_v . ' ' . $a_v);
+
+        // var_dump($name, $nameUrl);
+
+        // Create image style
+        $style = ImageStyle::create(array('name' => $nameUrl, 'label' => $name));
+
+        // Create effect
+        $configuration = [];
+        $configuration[] =
+          [
+            'uuid' => NULL,
+            'id' => 'image_scale_and_crop',
+            'weight' => 1,
+            'data' => [
+              'width' => $w_v,
+              'height' => $h_v,
+              'anchor' => $a_v
+            ]
+          ];
+
+        $configuration[] = [
+          'uuid' => NULL,
+          'id' => 'image_convert',
+          'weight' => 2,
+          'data' => [
+            'extension' => 'webp'
+          ]
+        ];
+
+        foreach ($configuration as $key => $value) {
+          $style->addImageEffect($value);
+        }
+
+        $style->save();
+      }
+    }
+  }
+
+  foreach ($width as $w_k => $w_v) {
+    // Create image style
+
+    [$name, $nameUrl] = get_image_style_name($w_v . ' contain');
+
+    $style = ImageStyle::create(array('name' => $nameUrl, 'label' => $name));
+
+    // Create effect
+    $configuration = [];
+    $configuration[] =
+      [
+        'uuid' => NULL,
+        'id' => 'image_scale',
+        'weight' => 1,
+        'data' => [
+          'width' => $w_v,
+          'height' => null,
+          'upscale' => false
+        ]
+      ];
+
+    $configuration[] = [
+      'uuid' => NULL,
+      'id' => 'image_convert',
+      'weight' => 2,
+      'data' => [
+        'extension' => 'webp'
+      ]
+
+    ];
+
+    foreach ($configuration as $key => $value) {
+
+      $style->addImageEffect($value);
+    }
+
+    $style->save();
+  }
+}
+
+/**
+ * Usuwa wszystkie style obrazów wygenerowane przez ten plugin
+ *
+ * @return void
+ */
+function remove_all_image_styles() {
+  [$width, $height, $anchor] = return_image_parameters();
+
+  foreach ($width as $w_k => $w_v) {
+    foreach ($height as $h_k => $h_v) {
+      foreach ($anchor as $a_k => $a_v) {
+
+        [$name, $nameUrl] = get_image_style_name($w_v . 'x' . $h_v . ' ' . $a_v);
+        remove_image_style_by_name($nameUrl);
+
+        [$name, $nameUrl] = get_image_style_name($w_v . ' contain');
+        remove_image_style_by_name($nameUrl);
+      }
+    }
+  }
+}
+
+/**
+ * Usuwa style obrazów o podanej nazwie
+ *
+ * @param string $name
+ * @return void
+ */
+function remove_image_style_by_name($name) {
+  $style = ImageStyle::load($name);
+  if ($style) {
+    $style->delete();
+  }
+}
+
+/**
+ * Zwraca tablicę z szerokościami, wysokościami i anchorami dla wszystkich stylów obrazów
+ *
+ * @return array
+ */
+function return_image_parameters() {
+  $width = [1400, 700, 470, 350, 280, 240, 1920];
+  $height = [200, 300, 400, 500, 750, 940];
+  $anchor = ['left-top', 'center-top', 'right-top', 'left-center', 'center-center', 'right-center', 'left-bottom', 'center-bottom', 'right-bottom'];
+
+  return [
+    $width,
+    $height,
+    $anchor
+  ];
+}
+
+/**
+ * Zwraca nazwę i nazwę url dla stylu obrazu
+ *
+ * @param string $name
+ * @return array Tablica [$label, $nameUrl]
+ */
+function get_image_style_name($name) {
+
+  $label = 'Obraz ' . $name;
+  $nameUrl = 'my_image_' . $name;
+
+  $pattern = "/[^a-zA-Z0-9_]/";
+  $replacement = "_";
+
+  $nameUrl = preg_replace($pattern, $replacement, $nameUrl);
+
+  return [
+    $label,
+    $nameUrl
+  ];
+}

@@ -1,0 +1,10 @@
+entity.aktualnosci_kategorie.settings:
+  title: "Kategorie aktualności"
+  description: "Configure a Kategorie aktualności entity type."
+  route_name: entity.aktualnosci_kategorie.settings
+  parent: system.admin_structure
+entity.aktualnosci_kategorie.collection:
+  title: "Kategorie aktualności"
+  description: "List of kategorie aktualności."
+  route_name: entity.aktualnosci_kategorie.collection
+  parent: system.admin_content

@@ -1,0 +1,129 @@
+<?php
+
+/**
+ * @file
+ * Provides a aktorzy_tags entity type.
+ */
+
+use Drupal\Core\Render\Element;
+use Drupal\aktorzy_tags\Entity\aktorzy_tags;
+use Drupal\user\UserInterface;
+
+use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Session\AccountInterface;
+
+use Drupal\Core\Routing\RouteMatchInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+
+function aktorzy_tags_entity_access(EntityInterface $entity, $operation, AccountInterface $account) {
+
+
+  if ($operation == 'view' && $account->hasPermission('kategorie aktorów.view')) {
+
+    return AccessResult::allowed();
+  } elseif (in_array($operation, ['delete', 'edit', 'update']) && $account->hasPermission('kategorie aktorów.edit')) {
+    return AccessResult::allowed();
+  }
+  // return AccessResult::forbidden();
+
+  return AccessResult::allowed();
+}
+
+function aktorzy_tags_entity_insert(Drupal\Core\Entity\EntityInterface $entity) {
+  // Sprawdź, czy tworzona jednostka jest jednostką, którą chcesz śledzić.
+  if ($entity->getEntityTypeId() == 'aktorzy_tags') {
+    // Skonfiguruj ścieżkę docelową przekierowania.
+    $path = '/admin/content/aktorzy_tags';
+    // Przygotuj odpowiedź przekierowania.
+    $response = new RedirectResponse($path);
+    // Wykonaj przekierowanie.
+    $response->send();
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function aktorzy_tags_theme() {
+
+  return [
+    'aktorzy_tags' => [
+      'render element' => 'elements',
+    ],
+  ];
+}
+
+/**
+ * Prepares variables for aktorzy_tags templates.
+ *
+ * Default template: aktorzy_tags.html.twig.
+ *
+ * @param array $variables
+ *   An associative array containing:
+ *   - elements: An associative array containing the aktorzy_tags information and any
+ *     fields attached to the entity.
+ *   - attributes: HTML attributes for the containing element.
+ */
+function template_preprocess_aktorzy_tags(array &$variables) {
+
+  $variables['view_mode'] = $variables['elements']['#view_mode'];
+
+
+  foreach (Element::children($variables['elements']) as $key) {
+    $variables['content'][$key] = $variables['elements'][$key];
+  }
+}
+
+/**
+ * Implements hook_user_cancel().
+ */
+// function aktorzy_tags_user_cancel($edit, UserInterface $account, $method) {
+//   switch ($method) {
+//     case 'user_cancel_block_unpublish':
+//       // Unpublish aktorzy_tagss.
+//       $storage = \Drupal::entityTypeManager()->getStorage('aktorzy_tags');
+//       $aktorzy_tags_ids = $storage->getQuery()
+//         ->condition('uid', $account->id())
+//         ->condition('status', 1)
+//         ->execute();
+//       foreach ($storage->loadMultiple($aktorzy_tags_ids) as $aktorzy_tags) {
+//         $aktorzy_tags->set('status', FALSE);
+//         $aktorzy_tags->save();
+//       }
+//       break;
+
+//     case 'user_cancel_reassign':
+//       // Anonymize aktorzy_tagss.
+//       $storage = \Drupal::entityTypeManager()->getStorage('aktorzy_tags');
+//       $aktorzy_tags_ids = $storage->getQuery()
+//         ->condition('uid', $account->id())
+//         ->execute();
+//       foreach ($storage->loadMultiple($aktorzy_tags_ids) as $aktorzy_tags) {
+//         $aktorzy_tags->setOwnerId(0);
+//         $aktorzy_tags->save();
+//       }
+//       break;
+//   }
+// }
+
+/**
+ * Implements hook_ENTITY_TYPE_predelete() for user entities.
+ */
+// function aktorzy_tags_user_predelete(UserInterface $account) {
+//   // Delete aktorzy_tagss.
+//   $storage = \Drupal::entityTypeManager()->getStorage('aktorzy_tags');
+//   $aktorzy_tags_ids = $storage->getQuery()
+//     ->condition('uid', $account->id())
+//     ->execute();
+//   $aktorzy_tagss = $storage->loadMultiple($aktorzy_tags_ids);
+//   $storage->delete($aktorzy_tagss);
+//   // Delete old revisions.
+//   $aktorzy_tags_ids = $storage->getQuery()
+//     ->allRevisions()
+//     ->condition('uid', $account->id())
+//     ->execute();
+//   foreach (array_keys($aktorzy_tags_ids) as $revision_id) {
+//     $storage->deleteRevision($revision_id);
+//   }
+// }

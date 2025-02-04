@@ -1,0 +1,133 @@
+<?php
+
+/**
+ * Dokumentacja Freshmail API: https://freshmail.pl/wp-content/uploads/2016/08/REST_API_v1.0.21.pdf
+ */
+
+
+/**
+ * Implements hook_form_alter().
+ */
+function freshmail_integration_cg2_form_alter(&$form, &$form_state, $form_id) {
+  // get freshmail_integration_cg2 settings
+  $config = \Drupal::config('freshmail_integration_cg2.settings');
+
+  // Sprawdź, czy formularz to formularz Webform
+  if ($form_id == $config->get('form')) {
+
+    // Dodaj naszą funkcję do listy funkcji wywoływanych po zatwierdzeniu formularza
+    foreach (array_keys($form['actions']) as $action) {
+      // dump($action);
+      if ($action != 'preview' && isset($form['actions'][$action]['#type']) && $form['actions'][$action]['#type'] === 'submit') {
+        $form['actions'][$action]['#submit'][] = 'freshmail_integration_cg2_webform_submit_handler';
+        // ta funkcja odpali się w momencie zatwierdzenia formularza
+      }
+    }
+  }
+}
+
+/**
+ * Funkcja wywoływana po zatwierdzeniu formularza Webform.
+ */
+function freshmail_integration_cg2_webform_submit_handler($form, &$form_state) {
+
+  // $values = $form_state->getValues();
+  // w teorii ta zmienna powinna zawierać wszystkie przesłane dane ale z jakiegoś
+  // powodu nie ma ich jeśli przesyłamy dane za pomocą AJAX
+  // Dlatego też wyciągam tą wartość z $_POST
+
+  $email = $_POST['adres_e_mail'];
+
+  if (empty($email)) {
+    \Drupal::service('messenger')->addMessage('Pole e-mail jest puste', 'error');
+    return;
+  }
+
+  $config = \Drupal::config('freshmail_integration_cg2.settings'); // pobieram konfiguracje modułu
+
+  $list = $config->get('list');
+  $token = $config->get('token');
+
+  $client = \Drupal::httpClient();
+
+  $options = [
+    'verify' => false,
+    'http_errors' => false, // wyłącz wyrzucanie wyjątków
+    'headers' => [
+      'Authorization' => 'Bearer ' . $token,
+      'Content-Type' => 'application/x-www-form-urlencoded'
+    ],
+    'form_params' => [
+      'list' => $list,
+      'email' => $email,
+    ]
+  ];
+
+  $res = $client->request(
+    'POST',
+    'https://api.freshmail.com/rest/subscriber/add',
+    $options
+  );
+
+  $response = $res->getBody()->getContents();
+
+  $json = json_decode($response, true);
+
+  if (isset($json['errors'])) {
+    foreach ($json['errors'] as $v) {
+      switch (intval($v['code'])) {
+        case 1301:
+          $message = 'Adres email jest niepoprawny';
+          break;
+        case 1302:
+          $message = 'Lista subskrypcyjna nie istnieje lub brak hash\'a listy';
+          break;
+        case 1303:
+          $message = 'Jedno lub więcej pól dodatkowych jest niepoprawne';
+          break;
+        case 1304:
+          $message = 'Subskrybent już istnieje w tej liście subskrypcyjnej i ma status Aktywny lub Do aktywacji';
+          break;
+        case 1305:
+          $message = 'Próbowano nadać niepoprawny status subskrybenta';
+          break;
+        case 1331:
+          $message = 'Użytkownik już istnieje w tej liście subskrypcyjnej i ma status Aktywny lub Do aktywacji';
+          break;
+        default:
+          $message = 'Wystąpił nieznany błąd - ' . $v['code'];
+      };
+
+
+      \Drupal::service('messenger')->addMessage($message, 'error');
+    }
+
+    dump(\Drupal::service('messenger')->all());
+
+    \Drupal::service('messenger')->deleteByType('status');
+  }
+}
+
+function freshmail_integration_cg2_entity_insert(&$entity) {
+
+  //get entity name
+  $entity_type = $entity->getEntityTypeId();
+
+  //get bundle name
+  $bundle = $entity->bundle();
+
+  if ($entity_type == 'webform_submission' && $bundle == 'newsletter') {
+    // remove data from db
+    $query = \Drupal::database()->delete('webform_submission_data')
+      ->condition('sid', $entity->id())
+      ->execute();
+
+    // load submission
+    $webform_submission = \Drupal\webform\Entity\WebformSubmission::load($entity->id());
+    // Check if submission is returned.
+    if (!empty($webform_submission)) {
+      //Delete the Submission
+      $webform_submission->delete();
+    }
+  }
+}

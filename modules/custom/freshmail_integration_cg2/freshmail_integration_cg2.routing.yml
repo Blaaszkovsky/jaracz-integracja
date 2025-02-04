@@ -1,0 +1,7 @@
+freshmail_integration_cg2.settings_form:
+  path: '/admin/config/system/freshmail-integration-cg2'
+  defaults:
+    _title: 'Freshmail Integration CG2 settings'
+    _form: 'Drupal\freshmail_integration_cg2\Form\SettingsForm'
+  requirements:
+    _permission: 'administer freshmail_integration_cg2 configuration'

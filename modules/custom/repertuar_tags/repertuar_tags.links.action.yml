@@ -1,0 +1,5 @@
+repertuar_tags.add_form:
+  title: "Dodaj tagi repertuaru"
+  route_name: entity.repertuar_tags.add_form
+  appears_on:
+    - entity.repertuar_tags.collection

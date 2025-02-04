@@ -1,0 +1,8 @@
+# Schema for the configuration files of the CG2 Deklaracja dostępności module.
+cg2_deklaracja_dostepnosci.settings:
+  type: config_object
+  label: 'CG2 Deklaracja dostępności settings'
+  mapping:
+    example:
+      type: string
+      label: 'Example'

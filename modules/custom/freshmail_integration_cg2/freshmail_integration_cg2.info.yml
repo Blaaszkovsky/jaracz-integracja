@@ -1,0 +1,7 @@
+name: Integracja z Freshmail CG2
+type: module
+description: Umożliwia dodawanie użytkowników do listy mailingowej Freshmail.
+package: CG2
+core_version_requirement: ^9 || ^10
+dependencies:
+  - webform:webform

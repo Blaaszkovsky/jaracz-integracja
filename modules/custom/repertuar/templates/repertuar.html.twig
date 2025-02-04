@@ -1,0 +1,132 @@
+{#
+/**
+ * @file
+ * Default theme implementation to present a realizacje entity.
+ *
+ * This template is used when viewing a canonical realizacje page,
+ *
+ * Available variables:
+ * - content: A list of content items. Use 'content' to print all content, or
+ *   print a subset such as 'content.label'.
+ * - attributes: HTML attributes for the container element.
+ *
+ * @see template_preprocess_realizacje()
+ */
+#}
+
+{# <pre>
+	{{ dump(view_mode) }}
+</pre> #}
+
+{% if view_mode == 'teaser' %}
+
+	{% elseif view_mode == 'repertuar' %}
+
+		<div class="repertuar">
+
+			<div class="repertuar__time h4">
+
+				<span class="callendar__hide-in-callendar">{{content.field_data_i_czas.0["#attributes"].datetime|date('d.m.Y')}},</span>
+				godz.&nbsp;{{content.field_data_i_czas.0["#attributes"].datetime|date('H:i')}}
+			</div>
+
+			{% if content.field_odnosnik_opisu_nad_tytulem.0 %}
+
+				<a
+					href="{{content.field_odnosnik_opisu_nad_tytulem.0['#url']}}"
+					{% if content.field_odnosnik_opisu_nad_tytulem.0['#options'].external %}target="_blank"{% endif %}
+					class="repertuar__toptitle"
+				>
+					{{content.field_opis_nad_tytulem}}
+				</a>
+
+			{% else %}
+
+				<div class="repertuar__toptitle">
+					{{content.field_opis_nad_tytulem}}
+				</div>
+
+			{% endif %}
+
+
+			<div class="repertuar__title">
+
+				<h3 class="repertuar__spectacle h4">
+					<a href="{{content.field_sreferencja["#additional_data"].url}}">
+						<span class="repertuar__icon icon icon--arrow-right-up"></span>
+						<span class="repertuar__event-title">
+							{{content.field_sreferencja["#additional_data"].title}}
+						</span>
+					</a>
+				</h3>
+
+				{% if content.field_odnosnik_opisu_pod_tytulem.0 %}
+
+					<div
+						class="repertuar__subtitle"
+					>
+
+						<a
+							href="{{content.field_odnosnik_opisu_pod_tytulem.0['#url']}}"
+							{% if content.field_odnosnik_opisu_pod_tytulem.0['#options'].external %}target="_blank"{% endif %}
+						>
+							{{content.field_opis_pod_tytulem}}
+						</a>
+
+						{{content.field_tagi}}
+					</div>
+
+				{% else %}
+
+					<div class="repertuar__subtitle">
+						{{content.field_opis_pod_tytulem}}
+
+						{{content.field_tagi}}
+					</div>
+				{% endif %}
+			</div>
+
+
+			<div class="repertuar__description h4">
+				{% if content.field_opis_po_prawej_strony.0 %}
+
+					{% if content.field_odnosnik_opisu_po_prawej_s.0 %}
+					<a
+							href="{{content.field_odnosnik_opisu_po_prawej_s.0['#url']}}"
+							{% if content.field_odnosnik_opisu_po_prawej_s.0['#options'].external %}target="_blank"{% endif %}
+						>
+							{{content.field_opis_po_prawej_strony}}
+						</a>
+
+					{% else %}
+
+						{{content.field_opis_po_prawej_strony}}
+
+					{% endif %}
+
+
+				{% else %}
+					{{content.field_sreferencja["#additional_data"].scena}}
+				{% endif %}
+			</div>
+
+
+			{% if content.field_odnosnik_do_biletow.0 %}
+
+				<div class="repertuar__ticket">
+					<a
+						href="{{content.field_odnosnik_do_biletow.0['#url']}}"
+						{% if content.field_odnosnik_do_biletow.0['#options'].external %}target="_blank"{% endif %}
+						class="btn btn--gray"
+						>
+
+						kup bilet&nbsp;
+						<span class="icon icon--arrow-right-up"></span>
+					</a>
+				</div>
+			{% endif %}
+
+		</div>
+	{% else %}
+
+{% endif %}

@@ -1,0 +1,11 @@
+administer repertuar:
+  title: "Administer repertuar settings"
+  restrict access: true
+
+repertuar.edit:
+  title: "Edit repertuar"
+  description: "Edit content created by repertuar."
+
+repertuar.view:
+  title: "View repertuar"
+  description: "Edit content created by repertuar."

@@ -1,0 +1,23 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for CG2 Deklaracja dostępności module.
+ */
+
+// add meta tag to html head
+function cg2_deklaracja_dostepnosci_preprocess_html(&$variables) {
+  //get domain
+  $site_url = \Drupal::request()->getSchemeAndHttpHost();
+
+  $variables['#attached']['html_head'][] = [
+    [
+      '#tag' => 'meta',
+      '#attributes' => [
+        'name' => 'deklaracja-dostępności',
+        'content' => $site_url . '/deklaracja-dostepnosci',
+      ],
+    ],
+    'meta'
+  ];
+}

@@ -1,0 +1,35 @@
+entity.aktorzy_tags.settings:
+  path: "admin/structure/aktorzy-tags"
+  defaults:
+    _form: '\Drupal\aktorzy_tags\Form\AktorzyTagsSettingsForm'
+    _title: "Kategorie aktorów"
+  requirements:
+    _permission: "administer kategorie aktorów"
+
+entity.aktorzy_tags.collection:
+  path: "/admin/content/aktorzy-tags"
+  defaults:
+    # Calls the list controller, defined in the annotation of the contact entity.
+    _entity_list: "aktorzy_tags"
+    _title: "Grupy aktorów"
+  requirements:
+    # Checks for permission directly.
+    _permission: "kategorie aktorów.view"
+
+entity.aktorzy_tags.add_form:
+  path: "/admin/content/aktorzy_tags/add"
+  defaults:
+    # Calls the form.add controller, defined in the contact entity.
+    _entity_form: aktorzy_tags.add
+    _title: "Dodaj grupę aktorów"
+  requirements:
+    _permission: "kategorie aktorów.edit"
+
+entity.aktorzy_tags.edit_form:
+  path: "/admin/content/aktorzy_tags/{aktorzy_tags}"
+  defaults:
+    # Calls the form.edit controller, defined in the contact entity.
+    _entity_form: aktorzy_tags.edit
+    _title: "Edytuj grupe aktorów"
+  requirements:
+    _permission: "kategorie aktorów.edit"

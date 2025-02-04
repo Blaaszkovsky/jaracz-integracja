@@ -1,0 +1,4 @@
+administer cg2_deklaracja_dostepnosci configuration:
+  title: 'Administer cg2_deklaracja_dostepnosci configuration'
+  description: 'Optional description.'
+  restrict access: true

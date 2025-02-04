@@ -1,0 +1,11 @@
+administer tagi repertuaru:
+  title: "Administer tagi repertuaru settings"
+  restrict access: true
+
+repertuar_tags.edit:
+  title: "Edit repertuar_tags"
+  description: "Edit content created by repertuar_tags."
+
+repertuar_tags.view:
+  title: "View repertuar_tags"
+  description: "Edit content created by repertuar_tags."

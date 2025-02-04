@@ -1,0 +1,11 @@
+administer kategorie aktualności:
+  title: "Administer kategorie aktualności settings"
+  restrict access: false
+
+kategorie aktualności.edit:
+  title: "Edit kategorie aktualności"
+  description: "Edit content created by kategorie aktualności."
+
+kategorie aktualności.view:
+  title: "View kategorie aktualności"
+  description: "Edit content created by kategorie aktualności."

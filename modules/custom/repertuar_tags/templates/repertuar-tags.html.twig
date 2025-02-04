@@ -1,0 +1,28 @@
+{#
+/**
+ * @file
+ * Default theme implementation to present a realizacje entity.
+ *
+ * This template is used when viewing a canonical realizacje page,
+ *
+ * Available variables:
+ * - content: A list of content items. Use 'content' to print all content, or
+ *   print a subset such as 'content.label'.
+ * - attributes: HTML attributes for the container element.
+ *
+ * @see template_preprocess_realizacje()
+ */
+#}
+
+
+{% set color = content.field_kolor_tekstu.0['#markup'] == 1 ? "color: #000;" : "color: #fdfdfd;" %}
+{% set bgc = content.field_kolor.0 ? "background-color: #" ~ content.field_kolor.0["#context"].value ~ ";" %}
+
+<div class="tag" style="{{color}}{{bgc}} ">
+	{{content.label}}
+
+	{% if content.field_ikona.0 %}
+		<img src="{{file_url(content.field_ikona['#items'].entity.uri.value)}}" alt="">
+	{% endif %}
+
+</div>

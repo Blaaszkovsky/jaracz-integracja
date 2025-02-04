@@ -1,0 +1,35 @@
+entity.repertuar.settings:
+  path: "admin/structure/repertuar"
+  defaults:
+    _form: '\Drupal\repertuar\Form\RepertuarSettingsForm'
+    _title: "repertuar"
+  requirements:
+    _permission: "administer repertuar"
+
+entity.repertuar.collection:
+  path: "/admin/content/repertuar"
+  defaults:
+    # Calls the list controller, defined in the annotation of the contact entity.
+    _entity_list: "repertuar"
+    _title: "Repertuar"
+  requirements:
+    # Checks for permission directly.
+    _permission: "repertuar.view"
+
+entity.repertuar.add_form:
+  path: "/admin/content/repertuar/add"
+  defaults:
+    # Calls the form.add controller, defined in the contact entity.
+    _entity_form: repertuar.add
+    _title: "Dodaj pozycje repertuaru"
+  requirements:
+    _permission: "repertuar.edit"
+
+entity.repertuar.edit_form:
+  path: "/admin/content/repertuar/{repertuar}"
+  defaults:
+    # Calls the form.edit controller, defined in the contact entity.
+    _entity_form: repertuar.edit
+    _title: "Edytuj pozycje repertuaru"
+  requirements:
+    _permission: "repertuar.edit"

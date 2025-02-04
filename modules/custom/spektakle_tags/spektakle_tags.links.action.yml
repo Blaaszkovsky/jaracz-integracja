@@ -1,0 +1,5 @@
+spektakle_tags.add_form:
+  title: "Dodaj tag spektaklu"
+  route_name: entity.spektakle_tags.add_form
+  appears_on:
+    - entity.spektakle_tags.collection

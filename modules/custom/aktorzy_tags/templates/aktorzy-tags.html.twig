@@ -1,0 +1,30 @@
+{#
+/**
+ * @file
+ * Default theme implementation to present a realizacje entity.
+ *
+ * This template is used when viewing a canonical realizacje page,
+ *
+ * Available variables:
+ * - content: A list of content items. Use 'content' to print all content, or
+ *   print a subset such as 'content.label'.
+ * - attributes: HTML attributes for the container element.
+ *
+ * @see template_preprocess_realizacje()
+ */
+#}
+
+{% if _context.elements['#my_actors'][_context.elements["#aktorzy_tags"].getId] %}
+
+	<div class="u-even-odd-color-section container container--hd">
+		<div class="container">
+			<div class="tiles tiles--4-columns">
+
+				<h2 class="section__title">{{content.label}}</h2>
+
+				{{_context.elements['#my_actors'][_context.elements["#aktorzy_tags"].getId]}}
+
+			</div>
+		</div>
+	</div>
+{% endif %}

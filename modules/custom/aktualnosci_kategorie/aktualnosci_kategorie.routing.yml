@@ -1,0 +1,35 @@
+entity.aktualnosci_kategorie.settings:
+  path: "admin/structure/kategorie-aktualnosci"
+  defaults:
+    _form: '\Drupal\aktualnosci_kategorie\Form\AktualnosciKategorieSettingsForm'
+    _title: "Kategorie aktualności"
+  requirements:
+    _permission: "administer kategorie aktualności"
+
+entity.aktualnosci_kategorie.collection:
+  path: "/admin/content/kategorie-aktualnosci"
+  defaults:
+    # Calls the list controller, defined in the annotation of the contact entity.
+    _entity_list: "aktualnosci_kategorie"
+    _title: "Kategorie aktualności"
+  requirements:
+    # Checks for permission directly.
+    _permission: "kategorie aktualności.view"
+
+entity.aktualnosci_kategorie.add_form:
+  path: "/admin/content/kategorie-aktualnosci/add"
+  defaults:
+    # Calls the form.add controller, defined in the contact entity.
+    _entity_form: aktualnosci_kategorie.add
+    _title: "Dodaj grupę aktorów"
+  requirements:
+    _permission: "kategorie aktualności.edit"
+
+entity.aktualnosci_kategorie.edit_form:
+  path: "/admin/content/kategorie-aktualnosci/{aktualnosci_kategorie}"
+  defaults:
+    # Calls the form.edit controller, defined in the contact entity.
+    _entity_form: aktualnosci_kategorie.edit
+    _title: "Edytuj grupe aktorów"
+  requirements:
+    _permission: "kategorie aktualności.edit"

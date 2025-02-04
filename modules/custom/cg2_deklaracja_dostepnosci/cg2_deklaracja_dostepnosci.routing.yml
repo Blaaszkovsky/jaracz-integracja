@@ -1,0 +1,15 @@
+cg2_deklaracja_dostepnosci.example:
+  path: "/deklaracja-dostepnosci"
+  defaults:
+    _title: "Deklaracja dostępności"
+    _controller: '\Drupal\cg2_deklaracja_dostepnosci\Controller\Cg2DeklaracjaDostepnosciController::build'
+  requirements:
+    _permission: "access content"
+
+cg2_deklaracja_dostepnosci.settings_form:
+  path: "/admin/config/system/cg2-deklaracja-dostepnosci"
+  defaults:
+    _title: "CG2 Deklaracja dostępności settings"
+    _form: 'Drupal\cg2_deklaracja_dostepnosci\Form\SettingsForm'
+  requirements:
+    _permission: "administer cg2_deklaracja_dostepnosci configuration"

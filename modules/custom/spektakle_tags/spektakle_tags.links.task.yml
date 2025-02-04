@@ -1,0 +1,9 @@
+entity.spektakle_tags.settings:
+  title: "Settings"
+  route_name: entity.spektakle_tags.settings
+  base_route: entity.spektakle_tags.settings
+entity.spektakle_tags.collection:
+  title: "Sceny spektakli"
+  route_name: entity.spektakle_tags.collection
+  base_route: system.admin_content
+  weight: 10

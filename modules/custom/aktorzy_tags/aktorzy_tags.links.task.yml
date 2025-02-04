@@ -1,0 +1,9 @@
+entity.aktorzy_tags.settings:
+  title: "Settings"
+  route_name: entity.aktorzy_tags.settings
+  base_route: entity.aktorzy_tags.settings
+entity.aktorzy_tags.collection:
+  title: "Kategorie aktorów"
+  route_name: entity.aktorzy_tags.collection
+  base_route: system.admin_content
+  weight: 10

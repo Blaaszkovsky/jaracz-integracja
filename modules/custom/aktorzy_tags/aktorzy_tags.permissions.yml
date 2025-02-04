@@ -1,0 +1,25 @@
+administer kategorie aktorów:
+  title: "Administer kategorie aktorów settings"
+  restrict access: true
+
+kategorie aktorów.edit:
+  title: "Edit kategorie aktorów"
+  description: "Edit content created by kategorie aktorów."
+
+kategorie aktorów.view:
+  title: "View kategorie aktorów"
+  description: "Edit content created by kategorie aktorów."
+
+kategorie aktorów.delete:
+  title: "Delete kategorie aktorów"
+  description: "Edit content created by kategorie aktorów."
+
+delete kategorie aktorów:
+  title: "LAMBDA"
+  description: "Edit content created by kategorie aktorów."
+edit kategorie aktorów content:
+  title: "LAMBDA"
+  description: "Edit content created by kategorie aktorów."
+view kategorie aktorów content:
+  title: "LAMBDA"
+  description: "Edit content created by kategorie aktorów."

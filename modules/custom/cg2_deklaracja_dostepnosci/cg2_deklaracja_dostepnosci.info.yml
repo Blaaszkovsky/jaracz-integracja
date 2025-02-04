@@ -1,0 +1,6 @@
+name: CG2 Deklaracja dostępności
+type: module
+description: Półautomatyczny moduł do utworzenia poprawnej deklaracji dstępności
+package: CG2
+core_version_requirement: ^9 || ^10
+version: 1.1

@@ -1,0 +1,154 @@
+<?php
+
+/**
+ * @file
+ * Provides a repertuar entity type.
+ */
+
+use Drupal\Core\Render\Element;
+use Drupal\repertuar\Entity\Repertuar;
+use Drupal\user\UserInterface;
+
+use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Session\AccountInterface;
+
+use Drupal\Core\Routing\RouteMatchInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+
+function repertuar_entity_access(EntityInterface $entity, $operation, AccountInterface $account) {
+
+
+  if ($operation == 'view' && $account->hasPermission('repertuar.view')) {
+    return AccessResult::allowed();
+  } elseif (in_array($operation, ['delete', 'edit', 'update']) && $account->hasPermission('repertuar.edit')) {
+    return AccessResult::allowed();
+  }
+  // return AccessResult::forbidden();
+
+  return AccessResult::allowed();
+}
+
+function repertuar_entity_insert(Drupal\Core\Entity\EntityInterface $entity) {
+  // Sprawdź, czy tworzona jednostka jest jednostką, którą chcesz śledzić.
+  if ($entity->getEntityTypeId() == 'repertuar') {
+    // Skonfiguruj ścieżkę docelową przekierowania.
+    $path = '/admin/content/repertuar';
+    // Przygotuj odpowiedź przekierowania.
+    $response = new RedirectResponse($path);
+    // Wykonaj przekierowanie.
+    $response->send();
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function repertuar_theme() {
+
+  return [
+    'repertuar' => [
+      'render element' => 'elements',
+    ],
+  ];
+}
+
+/**
+ * Prepares variables for repertuar templates.
+ *
+ * Default template: repertuar.html.twig.
+ *
+ * @param array $variables
+ *   An associative array containing:
+ *   - elements: An associative array containing the repertuar information and any
+ *     fields attached to the entity.
+ *   - attributes: HTML attributes for the containing element.
+ */
+function template_preprocess_repertuar(array &$variables) {
+
+  $variables['view_mode'] = $variables['elements']['#view_mode'];
+
+  if ($variables['view_mode'] == 'repertuar') {
+    if (!isset($variables['elements']['field_sreferencja'][0])) {
+      return;
+    }
+
+    $nodeId = $variables['elements']['field_sreferencja'][0]["#plain_text"];
+
+    $node = \Drupal\node\Entity\Node::load($nodeId);
+
+    //get node type
+    $nodeType = $node->getType();
+
+    $variables['elements']['field_sreferencja']['#additional_data'] = [
+      'title' => $node->getTitle(),
+      'url' => $node->toUrl()->toString(),
+    ];
+
+    if ($nodeType == 'spektakl') {
+      $spectalceId = $node->get('field_scena')->getValue()[0]['target_id'];
+
+      // get custom entity of type spektakle-tags by id
+      $spektakleTags = \Drupal::entityTypeManager()->getStorage('spektakle_tags')->load($spectalceId);
+
+      $variables['elements']['field_sreferencja']['#additional_data']['scena'] = $spektakleTags->label();
+    }
+  }
+
+  foreach (Element::children($variables['elements']) as $key) {
+    $variables['content'][$key] = $variables['elements'][$key];
+  }
+}
+
+/**
+ * Implements hook_user_cancel().
+ */
+// function repertuar_user_cancel($edit, UserInterface $account, $method) {
+//   switch ($method) {
+//     case 'user_cancel_block_unpublish':
+//       // Unpublish repertuars.
+//       $storage = \Drupal::entityTypeManager()->getStorage('repertuar');
+//       $repertuar_ids = $storage->getQuery()
+//         ->condition('uid', $account->id())
+//         ->condition('status', 1)
+//         ->execute();
+//       foreach ($storage->loadMultiple($repertuar_ids) as $repertuar) {
+//         $repertuar->set('status', FALSE);
+//         $repertuar->save();
+//       }
+//       break;
+
+//     case 'user_cancel_reassign':
+//       // Anonymize repertuars.
+//       $storage = \Drupal::entityTypeManager()->getStorage('repertuar');
+//       $repertuar_ids = $storage->getQuery()
+//         ->condition('uid', $account->id())
+//         ->execute();
+//       foreach ($storage->loadMultiple($repertuar_ids) as $repertuar) {
+//         $repertuar->setOwnerId(0);
+//         $repertuar->save();
+//       }
+//       break;
+//   }
+// }
+
+/**
+ * Implements hook_ENTITY_TYPE_predelete() for user entities.
+ */
+// function repertuar_user_predelete(UserInterface $account) {
+//   // Delete repertuars.
+//   $storage = \Drupal::entityTypeManager()->getStorage('repertuar');
+//   $repertuar_ids = $storage->getQuery()
+//     ->condition('uid', $account->id())
+//     ->execute();
+//   $repertuars = $storage->loadMultiple($repertuar_ids);
+//   $storage->delete($repertuars);
+//   // Delete old revisions.
+//   $repertuar_ids = $storage->getQuery()
+//     ->allRevisions()
+//     ->condition('uid', $account->id())
+//     ->execute();
+//   foreach (array_keys($repertuar_ids) as $revision_id) {
+//     $storage->deleteRevision($revision_id);
+//   }
+// }

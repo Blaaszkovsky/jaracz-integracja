@@ -1,0 +1,9 @@
+entity.aktualnosci_kategorie.settings:
+  title: "Settings"
+  route_name: entity.aktualnosci_kategorie.settings
+  base_route: entity.aktualnosci_kategorie.settings
+entity.aktualnosci_kategorie.collection:
+  title: "Kategorie aktualności"
+  route_name: entity.aktualnosci_kategorie.collection
+  base_route: system.admin_content
+  weight: 10

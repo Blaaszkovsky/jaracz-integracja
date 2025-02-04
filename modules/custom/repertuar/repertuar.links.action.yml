@@ -1,0 +1,5 @@
+repertuar.add_form:
+  title: "Dodaj pozycję repertuaru"
+  route_name: entity.repertuar.add_form
+  appears_on:
+    - entity.repertuar.collection
