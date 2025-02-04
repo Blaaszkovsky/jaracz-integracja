@@ -1,0 +1,178 @@
+<?php
+
+use Drupal\field\Entity\FieldStorageConfig;
+use Drupal\field\Entity\FieldConfig;
+use Drupal\Core\Entity\Entity\EntityFormDisplay;
+use Drupal\node\Entity\Node;
+
+/**
+ * Implements hook_cron().
+ * Automatycznie aktualizuje repertuar co 5 minut.
+ */
+function kicket_api_cron()
+{
+    $service = \Drupal::service('kicket_api.service');
+    $offers = $service->fetchOffers();
+
+    if (!empty($offers)) {
+        $service->updateRepertuar($offers);
+        \Drupal::logger('kicket_api')->notice("Automatyczna aktualizacja repertuaru zakończona.");
+    } else {
+        \Drupal::logger('kicket_api')->warning("Brak ofert do aktualizacji w CRON-ie.");
+    }
+}
+
+/**
+ * Implements hook_enable().
+ * Tworzy wymagane pola i przypisuje je do formularza edycji.
+ */
+function kicket_api_enable()
+{
+    kicket_api_enable_fields_in_form();
+}
+
+/**
+ * Implements hook_uninstall().
+ * Usuwa pola i grupę "Kicket API" po odinstalowaniu modułu.
+ */
+function kicket_api_uninstall()
+{
+    $entity_type = 'repertuar';
+    $bundle = 'repertuar';
+
+    // Lista pól do usunięcia.
+    $fields = [
+        'field_api_id',
+        'field_event_title',
+        'field_price',
+        'field_date',
+        'field_cancelled',
+        'field_available_places',
+        'field_cast',
+        'field_picture_url',
+        'field_reservation_form',
+        'field_scene_name',
+        'field_related_events',
+        'field_show_url',
+    ];
+
+    // Usuwanie pól.
+    foreach ($fields as $field_name) {
+        if ($field_config = FieldConfig::loadByName($entity_type, $bundle, $field_name)) {
+            $field_config->delete();
+            \Drupal::logger('kicket_api')->info("Usunięto pole: $field_name");
+        }
+
+        if ($field_storage = FieldStorageConfig::loadByName($entity_type, $field_name)) {
+            $field_storage->delete();
+            \Drupal::logger('kicket_api')->info("Usunięto pole: $field_name");
+
+        }
+    }
+
+    // Usuwanie grupy pól poprzez konfigurację (Drupal 10+).
+    $config_factory = \Drupal::configFactory();
+    $config_name = "field.field.$entity_type.$bundle.kicket_api";
+    if ($config_factory->getEditable($config_name)) {
+        $config_factory->getEditable($config_name)->delete();
+        \Drupal::logger('kicket_api')->info("Usunięto config modułu: $config_name");
+
+    }
+}
+
+/**
+ * Dodaje pola do formularza edycji i włącza je w Manage Form Display.
+ */
+function kicket_api_enable_fields_in_form()
+{
+    $entity_type = 'repertuar';
+    $bundle = 'repertuar';
+
+    $form_display = EntityFormDisplay::load("$entity_type.$bundle.default");
+
+    if (!$form_display) {
+        $form_display = EntityFormDisplay::create([
+            'targetEntityType' => $entity_type,
+            'bundle' => $bundle,
+            'mode' => 'default',
+            'status' => TRUE,
+        ]);
+    }
+
+    $fields = [
+        'field_api_id',
+        'field_price',
+        'field_date',
+        'field_cancelled',
+        'field_available_places',
+        'field_cast',
+        'field_picture_url',
+        'field_reservation_form',
+        'field_scene_name',
+        'field_related_events',
+        'field_show_url',
+    ];
+
+    foreach ($fields as $field_name) {
+        if (!$form_display->getComponent($field_name)) {
+            $form_display->setComponent($field_name, [
+                'type' => 'string_textfield',
+                'weight' => 0,
+            ]);
+        }
+    }
+
+    $form_display->save();
+}
+
+function kicket_api_page_attachments(array &$attachments)
+{
+    $config = \Drupal::config('kicket_api.settings');
+    $target_page = $config->get('target_page');
+    $primary_color = $config->get('primary_color');
+    $secondary_color = $config->get('secondary_color');
+    $background_color = $config->get('background_color');
+    $enable_WCAG = $config->get('enable_WCAG');
+    
+    if ($target_page) {
+        $route_match = \Drupal::routeMatch();
+        $node = $route_match->getParameter('node');
+        $getNode = Node::load($target_page);
+        $nodeUrl = $getNode->toUrl('canonical', ['absolute' => TRUE])->toString();
+        if ($node instanceof \Drupal\Node\NodeInterface && $node->id() == $target_page) {
+            $attachments['#attached']['library'][] = 'kicket_api/kicket_typ';
+        }
+    }
+
+    $attachments['#attached']['html_head'][] = [
+        [
+            '#tag' => 'script',
+            '#attributes' => [
+                'src' => 'https://kicket.com/embeddables/embedded-manager.js',
+                'defer' => false,
+            ],
+        ],
+        'kicket_api_embedded_manager',
+    ];
+
+    $meta_tags = [
+        ['name' => 'kicket:typRedirectUrl', 'content' => $nodeUrl],
+        ['name' => 'kicket:primaryColor', 'content' => $primary_color],
+        ['name' => 'kicket:secondaryColor', 'content' => $secondary_color],
+        ['name' => 'kicket:backgroundColor', 'content' => $background_color],
+        ['name' => 'kicket:enableWCAG', 'content' =>  $enable_WCAG == 1 ? 'true' : 'false'],
+    ];
+
+    foreach ($meta_tags as $meta) {
+        $attachments['#attached']['html_head'][] = [
+            [
+                '#tag' => 'meta',
+                '#attributes' => [
+                    'name' => $meta['name'],
+                    'content' => $meta['content'],
+                ],
+            ],
+            'kicket_api_meta_' . $meta['name'],
+        ];
+    }
+}

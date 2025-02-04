@@ -1,0 +1,6 @@
+kicket_api.settings:
+  title: 'Kicket API'
+  description: 'Ustawienia API Kicket.'
+  route_name: kicket_api.settings
+  parent: system.admin_config
+  weight: 100

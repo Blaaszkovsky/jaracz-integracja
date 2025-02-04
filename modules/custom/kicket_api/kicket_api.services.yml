@@ -1,0 +1,4 @@
+services:
+  kicket_api.service:
+    class: 'Drupal\kicket_api\Service\KicketApiService'
+    arguments: ['@http_client', '@config.factory', '@entity_type.manager']

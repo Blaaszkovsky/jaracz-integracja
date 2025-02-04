@@ -1,0 +1,71 @@
+<?php
+
+use Drupal\field\Entity\FieldStorageConfig;
+use Drupal\field\Entity\FieldConfig;
+use Drupal\Core\Config\ConfigFactoryInterface;
+
+/**
+ * Implements hook_install().
+ * Tworzy wymagane pola dla encji repertuar.
+ */
+function kicket_api_install()
+{
+    \Drupal::logger('kicket_api')->notice("Instalacja modułu kicket_api rozpoczęta.");
+    kicket_api_create_fields();
+}
+
+/**
+ * Tworzy wymagane pola dla encji repertuar.
+ */
+function kicket_api_create_fields()
+{
+    $entity_type = 'repertuar';
+    $bundle = 'repertuar';
+
+    // Sprawdzenie, czy encja repertuar istnieje.
+    if (!\Drupal::entityTypeManager()->getStorage($entity_type)) {
+        \Drupal::logger('kicket_api')->error("Encja '$entity_type' nie istnieje.");
+        return;
+    }
+
+    // Lista pól do dodania.
+    $fields = [
+        'field_api_id' => ['type' => 'string', 'label' => 'API ID'],
+        'field_event_title' => ['type' => 'string', 'label' => 'Tytuł wydarzenia'],
+        'field_price' => ['type' => 'decimal', 'label' => 'Cena'],
+        'field_date' => ['type' => 'string', 'label' => 'Data'],
+        'field_cancelled' => ['type' => 'boolean', 'label' => 'Odwołane'],
+        'field_available_places' => ['type' => 'integer', 'label' => 'Dostępne miejsca'],
+        'field_cast' => ['type' => 'text_long', 'label' => 'Obsada'],
+        'field_picture_url' => ['type' => 'string', 'label' => 'Zdjęcie'],
+        'field_reservation_form' => ['type' => 'string', 'label' => 'Formularz rezerwacji'],
+        'field_scene_name' => ['type' => 'string', 'label' => 'Scena'],
+        'field_show_url' => ['type' => 'string', 'label' => 'Wydarzenia zbiorcze'],
+        'field_related_events' => ['type' => 'boolean', 'label' => 'Inne terminy wydarzeń'],
+    ];
+
+    foreach ($fields as $field_name => $field_info) {
+        // Sprawdzenie, czy pole już istnieje w FieldStorageConfig.
+        if (!FieldStorageConfig::loadByName($entity_type, $field_name)) {
+            FieldStorageConfig::create([
+                'field_name' => $field_name,
+                'entity_type' => $entity_type,
+                'type' => $field_info['type'],
+                'cardinality' => 1,
+            ])->save();
+        }
+
+        // Sprawdzenie, czy pole jest przypisane do bundla "repertuar".
+        if (!FieldConfig::loadByName($entity_type, $bundle, $field_name)) {
+            FieldConfig::create([
+                'field_name' => $field_name,
+                'entity_type' => $entity_type,
+                'bundle' => $bundle,
+                'label' => $field_info['label'],
+            ])->save();
+            \Drupal::logger('kicket_api')->info("Dodano pole: $field_name");
+        } else {
+            \Drupal::logger('kicket_api')->notice("Pole $field_name już istnieje.");
+        }
+    }
+}

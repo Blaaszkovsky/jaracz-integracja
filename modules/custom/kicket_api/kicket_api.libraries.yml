@@ -1,0 +1,6 @@
+kicket_typ:
+  version: 1.x
+  js:
+    js/kicket_typ.js: {}
+  dependencies:
+    - core/jquery

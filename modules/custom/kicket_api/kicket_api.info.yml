@@ -1,0 +1,9 @@
+name: 'Kicket API Integration'
+type: module
+description: 'Pobiera oferty wydarzeń z API Kicket.com.'
+package: Custom
+core_version_requirement: ^9 || ^10
+cron:
+  interval: 300
+dependencies:
+  - drupal:node

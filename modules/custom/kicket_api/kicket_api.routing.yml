@@ -1,0 +1,7 @@
+kicket_api.settings:
+  path: '/admin/config/kicket-api'
+  defaults:
+    _form: '\Drupal\kicket_api\Form\KicketApiSettingsForm'
+    _title: 'Kicket API Settings'
+  requirements:
+    _permission: 'administer site configuration'
