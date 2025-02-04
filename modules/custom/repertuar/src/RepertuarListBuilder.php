@@ -89,6 +89,7 @@ class RepertuarListBuilder extends EntityListBuilder {
     $header['label'] = $this->t('Label');
     $header['data1'] = $this->t('Data');
     $header['status'] = $this->t('Status');
+    $header['kicket'] = $this->t('Kicket API');
 
     // $header['changed'] = [
     //   'data' => $this->t('Edytowano'),
@@ -119,12 +120,21 @@ class RepertuarListBuilder extends EntityListBuilder {
     // dump($entity->get('field_sreferencja')->getValue());
 
     // get node by nid
-    $node = \Drupal\node\Entity\Node::load($entity->get('field_sreferencja')->getValue()[0]['target_id']);
+    $field_sreferencja = $entity->get('field_sreferencja')->getValue();
+    $event_title = $entity->get('field_event_title')->getValue();
+
+    $node = NULL;
+
+    if (!empty($field_sreferencja) && isset($field_sreferencja[0]['target_id'])) {
+      $node = \Drupal\node\Entity\Node::load($field_sreferencja[0]['target_id']);
+    }
 
     // dump($node);
     // get node title
 
-    if (!$node) {
+    if (isset($event_title[0]['value']) && !$node) {
+      $title = $event_title[0]['value'] . " (brak powiązania)";
+    } elseif(!$node) {
       $title = '-- Brak zasobu --';
     } else {
       $title = $node->title->value;
@@ -139,6 +149,7 @@ class RepertuarListBuilder extends EntityListBuilder {
     $row['data1'] = implode(', ', $dates);
 
     $row['status'] = $entity->get('status')->value ? $this->t('Enabled') : $this->t('Disabled');
+    $row['kicket'] = $entity->get('field_api_id')->value ? $this->t('Enabled') : $this->t('Disabled');
 
     // $row['changed'] = $this->dateFormatter->format($entity->getChangedTime(), 'short');
 

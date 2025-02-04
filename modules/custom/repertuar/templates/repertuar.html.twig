@@ -17,19 +17,50 @@
 {# <pre>
 	{{ dump(view_mode) }}
 </pre> #}
+<style>
+.repertuar {
+	position: relative;
+}
+.repertuar__ticket,
+.repertuar__title {
+	position: relative;
+}
+.repertuar:hover::before {
+	opacity: .4;
+}
+.repertuar::before {
+	content: '';
+    background-image: var(--bg-image);
+    width: 100%;
+    height: 100%;
+    display: block;
+    position: absolute;
+    opacity: 0;
+    background-size: cover;
+    background-repeat: no-repeat;
+    transition: .3s all;
+    background-position: 100% 20%;
+}
+.repertuar__ticket--last-places,
+.repertuar__ticket--other-events {
+	display: block;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-top: 10px;
+    text-decoration: underline;
+}
+</style>
 
 {% if view_mode == 'teaser' %}
 
 	{% elseif view_mode == 'repertuar' %}
-
-		<div class="repertuar">
-
+		
+		<div class="repertuar" style="--bg-image: url({{event_image}});">
 			<div class="repertuar__time h4">
 
 				<span class="callendar__hide-in-callendar">{{content.field_data_i_czas.0["#attributes"].datetime|date('d.m.Y')}},</span>
 				godz.&nbsp;{{content.field_data_i_czas.0["#attributes"].datetime|date('H:i')}}
 			</div>
-
 			{% if content.field_odnosnik_opisu_nad_tytulem.0 %}
 
 				<a
@@ -50,7 +81,7 @@
 
 
 			<div class="repertuar__title">
-
+				{% if content.field_sreferencja["#additional_data"].url %}
 				<h3 class="repertuar__spectacle h4">
 					<a href="{{content.field_sreferencja["#additional_data"].url}}">
 						<span class="repertuar__icon icon icon--arrow-right-up"></span>
@@ -59,7 +90,16 @@
 						</span>
 					</a>
 				</h3>
-
+				{% else %}
+				<h3 class="repertuar__spectacle h4">
+					<a href="#">
+						<span class="repertuar__icon icon icon--arrow-right-up"></span>
+						<span class="repertuar__event-title">
+							{{event_title}}
+						</span>
+					</a>
+				</h3>
+				{% endif %}
 				{% if content.field_odnosnik_opisu_pod_tytulem.0 %}
 
 					<div
@@ -106,24 +146,43 @@
 
 
 				{% else %}
-					{{content.field_sreferencja["#additional_data"].scena}}
+					{{content.field_sreferencja["#additional_data"].scena ? content.field_sreferencja["#additional_data"].scena : event_scene_name}}
 				{% endif %}
 			</div>
+			{% if event_available_places > 0 and not event_cancelled %}
+				{% if event_cancelled %}
+					<div class="repertuar__ticket">
+						<span class="btn btn--black">odwołane</span>
+						{% if event_related_events %}
+							<a href="{{event_show_url}}" class="repertuar__ticket--other-events">Inne terminy</a>
+						{% endif %}
+					</div>
+				{% elseif event_available_places == 0 %}
+					<div class="repertuar__ticket">
+						<span class="btn btn--gray">wyprzedane</span>
+						{% if event_related_events %}
+							<a href="{{event_show_url}}" class="repertuar__ticket--other-events">Inne terminy</a>
+						{% endif %}
+					</div>
+				{% elseif content.field_odnosnik_do_biletow.0 %}
 
+					<div class="repertuar__ticket">
+						<a
+							href="{{content.field_odnosnik_do_biletow.0['#url']}}"
+							{% if content.field_odnosnik_do_biletow.0['#options'].external %}target="_blank"{% endif %}
+							class="btn btn--gray"
+							>
 
-			{% if content.field_odnosnik_do_biletow.0 %}
-
-				<div class="repertuar__ticket">
-					<a
-						href="{{content.field_odnosnik_do_biletow.0['#url']}}"
-						{% if content.field_odnosnik_do_biletow.0['#options'].external %}target="_blank"{% endif %}
-						class="btn btn--gray"
-						>
-
-						kup bilet&nbsp;
-						<span class="icon icon--arrow-right-up"></span>
-					</a>
-				</div>
+							kup bilet&nbsp;
+							<span class="icon icon--arrow-right-up"></span>
+						</a>
+						{% if event_scene_name == "Duża scena" and event_available_places <= 20 %}
+							<span class="repertuar__ticket--last-places">Ostatnie miejsca</span>
+						{% elseif event_available_places <= 10 %}
+							<span class="repertuar__ticket--last-places">Ostatnie miejsca</span>
+						{% endif %}
+					</div>
+				{% endif %}
 			{% endif %}
 
 		</div>

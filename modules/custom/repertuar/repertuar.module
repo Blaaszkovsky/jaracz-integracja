@@ -68,31 +68,43 @@ function template_preprocess_repertuar(array &$variables) {
 
   $variables['view_mode'] = $variables['elements']['#view_mode'];
 
+
   if ($variables['view_mode'] == 'repertuar') {
-    if (!isset($variables['elements']['field_sreferencja'][0])) {
-      return;
+    //KICKET API VARIABLES
+    $repertuar = $variables['elements']['#repertuar'];
+    $variables['event_title'] = $repertuar->get('field_event_title')->value ?? 'Brak tytułu';
+    $variables['event_price'] = (float) $repertuar->get('field_price')->value ?? 0;
+    $variables['event_image'] = $repertuar->get('field_picture_url')->value ?? '';
+    $variables['event_available_places'] = (int) $repertuar->get('field_available_places')->value ?? 0;
+    $variables['event_cancelled'] = (bool) $repertuar->get('field_cancelled')->value;
+    $variables['event_related_events'] = (bool) $repertuar->get('field_related_events')->value;
+    $variables['event_scene_name'] = $repertuar->get('field_scene_name')->value ?? 'Brak tytułu';
+    $variables['event_show_url'] = $repertuar->get('field_show_url')->value ?? '';
+    //END OF KICKET API VARIABLES
+    // dump($variables);
+    if (isset($variables['elements']['field_sreferencja'][0])) {
+      $nodeId = $variables['elements']['field_sreferencja'][0]["#plain_text"];
+  
+      $node = \Drupal\node\Entity\Node::load($nodeId);
+  
+      //get node type
+      $nodeType = $node->getType();
+  
+      $variables['elements']['field_sreferencja']['#additional_data'] = [
+        'title' => $node->getTitle(),
+        'url' => $node->toUrl()->toString(),
+      ];
+      if ($nodeType == 'spektakl') {
+        $spectalceId = $node->get('field_scena')->getValue()[0]['target_id'];
+  
+        // get custom entity of type spektakle-tags by id
+        $spektakleTags = \Drupal::entityTypeManager()->getStorage('spektakle_tags')->load($spectalceId);
+  
+        $variables['elements']['field_sreferencja']['#additional_data']['scena'] = $spektakleTags->label();
+      }
     }
 
-    $nodeId = $variables['elements']['field_sreferencja'][0]["#plain_text"];
 
-    $node = \Drupal\node\Entity\Node::load($nodeId);
-
-    //get node type
-    $nodeType = $node->getType();
-
-    $variables['elements']['field_sreferencja']['#additional_data'] = [
-      'title' => $node->getTitle(),
-      'url' => $node->toUrl()->toString(),
-    ];
-
-    if ($nodeType == 'spektakl') {
-      $spectalceId = $node->get('field_scena')->getValue()[0]['target_id'];
-
-      // get custom entity of type spektakle-tags by id
-      $spektakleTags = \Drupal::entityTypeManager()->getStorage('spektakle_tags')->load($spectalceId);
-
-      $variables['elements']['field_sreferencja']['#additional_data']['scena'] = $spektakleTags->label();
-    }
   }
 
   foreach (Element::children($variables['elements']) as $key) {
