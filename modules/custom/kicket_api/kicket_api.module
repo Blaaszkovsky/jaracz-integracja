@@ -133,7 +133,7 @@ function kicket_api_page_attachments(array &$attachments)
     $secondary_color = $config->get('secondary_color');
     $background_color = $config->get('background_color');
     $enable_WCAG = $config->get('enable_WCAG');
-    
+    $nodeUrl = '';
     if ($target_page) {
         $route_match = \Drupal::routeMatch();
         $node = $route_match->getParameter('node');

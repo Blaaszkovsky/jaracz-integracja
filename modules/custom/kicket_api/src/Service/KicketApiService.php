@@ -96,7 +96,7 @@ class KicketApiService
 
         foreach ($offers as $offer) {
             $api_id = $offer['id'];
-            $title = trim(str_replace($offer['subtitle'], '', $offer['title']));
+            $title = $offer['subtitle'] ? trim(str_replace($offer['subtitle'], '', $offer['title'])) : $offer['title'];
             $existing_entities = $storage->loadByProperties(['field_api_id' => $api_id]);
 
             if (!empty($existing_entities)) {
