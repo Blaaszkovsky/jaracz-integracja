@@ -149,7 +149,7 @@
 					{{content.field_sreferencja["#additional_data"].scena ? content.field_sreferencja["#additional_data"].scena : event_scene_name}}
 				{% endif %}
 			</div>
-			{% if event_available_places > 0 and not event_cancelled %}
+			{% if "now" | date("U") < content.field_data_i_czas.0["#attributes"].datetime | date("U") %}
 				{% if event_cancelled %}
 					<div class="repertuar__ticket">
 						<span class="btn btn--black">odwołane</span>
